@@ -29,5 +29,25 @@ class PongGame:
 		self.ball_x += self.ball_vx
 		self.ball_y += self.ball_vy
 
+		if moveLeft == 1 and self.playerLeft > 0:
+			self.playerLeft -= self.playerSpeed
+		elif moveLeft == -1 and self.playerLeft+self.playerSize[1] < self.height:
+			self.playerLeft += self.playerSpeed
+
+		if moveRight == 1 and self.playerRight > 0:
+			self.playerRight -= self.playerSpeed
+		elif moveRight == -1 and self.playerRight+self.playerSize[1] < self.height:
+			self.playerRight += self.playerSpeed
+
+		if(self.playerLeft < 0):
+			self.playerLeft = 0
+		elif(sef.playerLeft+self.playerSize[1] > self.height):
+			self.playerLeft = self.height - self.playerSize[1]
+
+		if(self.playerRight < 0):
+			self.playerRight = 0
+		elif(sef.playerRight+self.playerSize[1] > self.height):
+			self.playerRight = self.height - self.playerSize[1]
+
 	
 
