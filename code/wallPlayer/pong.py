@@ -31,7 +31,7 @@ class PongGame:
 		elif player == 1:
 			return np.array([self.playerRight, self.ball_x*-1, self.ball_y, self.ball_vx*-1, self.ball_vy, self.playerLeft])
 
-	def transition(self, moveLeft, moveRight): # return 0 for alive; -1 left won, 1 for right won
+	def transition(self, moveLeft): # return 0 for alive; -1 left won, 1 for right won
 		# moves: 1 = up, 0 = still, -1 = down
 		# if self.ball_x < 0 or self.ball_x+self.ball_size > self.width:
 		# 	self.ball_vx *= -1
@@ -62,30 +62,6 @@ class PongGame:
 			else:
 				return 1
 
-		if self.ball_x > self.width-self.padding-self.playerSize[0]-self.ball_size:
-			if self.playerRight < self.ball_y+self.ball_size/2 and self.playerRight+self.playerSize[1] > self.ball_y-(self.ball_size/2):
-				self.ball_x = self.width-self.ball_size-self.padding-self.playerSize[0]
-				self.ball_vx *= -1
-				xNeg = (self.ball_vx < 0)
-				yNeg = (self.ball_vy < 0)
-
-				self.ball_vx = abs(self.ball_vx)
-				self.ball_vy = abs(self.ball_vy)
-
-				d = abs((self.ball_y+self.ball_size/2)-(self.playerRight+self.playerSize[1]/2))
-				ratio = d/self.playerSize[1]
-
-				self.ball_vy = ratio*self.ball_maxv*1.5
-				self.ball_vx = math.sqrt(abs(self.ball_maxv*self.ball_maxv - self.ball_vy*self.ball_vy))
-
-				if xNeg:
-					self.ball_vx *= -1
-				if yNeg:
-					self.ball_vy *= -1
-				# DONE: Implement weird bouncing
-			else:
-				return -1
-
 		self.ball_x += self.ball_vx
 		self.ball_y += self.ball_vy
 
@@ -94,20 +70,10 @@ class PongGame:
 		elif moveLeft == -1 and self.playerLeft+self.playerSize[1] < self.height:
 			self.playerLeft += self.playerSpeed
 
-		if moveRight == 1 and self.playerRight > 0:
-			self.playerRight -= self.playerSpeed
-		elif moveRight == -1 and self.playerRight+self.playerSize[1] < self.height:
-			self.playerRight += self.playerSpeed
-
 		if(self.playerLeft < 0):
 			self.playerLeft = 0
 		elif(self.playerLeft+self.playerSize[1] > self.height):
 			self.playerLeft = self.height - self.playerSize[1]
-
-		if(self.playerRight < 0):
-			self.playerRight = 0
-		elif(self.playerRight+self.playerSize[1] > self.height):
-			self.playerRight = self.height - self.playerSize[1]
 
 		return 0
 

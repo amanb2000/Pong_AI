@@ -20,11 +20,11 @@ def draw(game_, DISP_):
 
 	pygame.draw.rect(DISP_, (255, 255, 255), (game_.ball_x, game_.ball_y, game_.ball_size, game_.ball_size))
 	pygame.draw.rect(DISP_, (255, 255, 200), (game_.padding, game_.playerLeft, game_.playerSize[0], game_.playerSize[1]))
-	pygame.draw.rect(DISP_, (255, 255, 200), (game_.width-game_.playerSize[0]-game_.padding, game_.playerRight, game_.playerSize[0], game_.playerSize[1]))
+	pygame.draw.rect(DISP_, (255, 255, 200), (game_.width-game_.playerSize[0]-game_.padding, 0, game_.playerSize[0], game_.height))
 
 
 # returns -1 if p1 wins, 1 if p2 wins
-def get_winner(p1, p2): # p1 and p2 are both agents
+def get_winner(p1): # p1 and p2 are both agents
 	run = True
 	game = pong.PongGame()
 
@@ -36,15 +36,8 @@ def get_winner(p1, p2): # p1 and p2 are both agents
 		cnt += 1
 		# move_num_left = np.argmax(np.dot(agnts[0].params, game.getState(0)))-1
 		move_num_left = p1.get_move(game.getState(-1))
-		move_num_right = p2.get_move(game.getState(1))
 
-		# for event in pygame.event.get():
-		# 	if event.type == pygame.QUIT:
-		# 		run = False
-
-
-
-		res = game.transition(move_num_left, move_num_right)
+		res = game.transition(move_num_left)
 
 		run = (res == 0)
 
