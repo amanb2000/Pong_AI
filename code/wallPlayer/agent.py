@@ -3,7 +3,7 @@ import math
 import random
 import pygame
 
-alpha = 1
+alpha = 0.1
 
 class Agent:
 	def __init__(self, params_in):

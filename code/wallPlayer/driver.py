@@ -4,7 +4,7 @@ import pong
 import agent
 import random
 
-GENERATION_SIZE = 100
+GENERATION_SIZE = 1000
 agnts = []
 
 for i in range(GENERATION_SIZE):
@@ -24,14 +24,13 @@ def draw(game_, DISP_):
 
 
 # returns -1 if p1 wins, 1 if p2 wins
-def get_winner(p1): # p1 and p2 are both agents
-	run = True
-	game = pong.PongGame()
-
+def fitness(p1): # p1 and p2 are both agents
 	res = 0
 
 	cnt = 0
 
+	run = True
+	game = pong.PongGame()
 	while run:
 		cnt += 1
 		# move_num_left = np.argmax(np.dot(agnts[0].params, game.getState(0)))-1
@@ -41,15 +40,14 @@ def get_winner(p1): # p1 and p2 are both agents
 
 		run = (res == 0)
 
-		if(cnt > 1000):
+		if(cnt > 10000):
+			# print('reached 10000')
 			break
 
-	if cnt > 35:
-		print('We exceeded 35 with',cnt)
 
-	return res
+	return cnt
 
-def show_game(p1, p2): # p1 and p2 are both agents
+def show_game(p1): # p1 and p2 are both agents
 	pygame.init()
 	DISP = pygame.display.set_mode((800, 800))
 	pygame.display.set_caption('PONG!')
@@ -66,8 +64,6 @@ def show_game(p1, p2): # p1 and p2 are both agents
 
 		# move_num_left = np.argmax(np.dot(agnts[0].params, game.getState(0)))-1
 		move_num_left = p1.get_move(game.getState(-1))
-		move_num_right = p2.get_move(game.getState(1))
-
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -75,7 +71,7 @@ def show_game(p1, p2): # p1 and p2 are both agents
 
 
 
-		res = game.transition(move_num_left, move_num_right)
+		res = game.transition(move_num_left)
 
 		run = (res == 0)
 		pygame.display.update()
@@ -85,40 +81,52 @@ def show_game(p1, p2): # p1 and p2 are both agents
 	pygame.quit()
 	# sys.exit()
 
-def compete(p1, p2): # return -1 for p1, 1 for p2
-	winner = get_winner(p1, p2) # -1 if p1 wins, 1 if p2 wins
-	# winner -= get_winner(p2, p1)
-	# winner += get_winner(p1, p2)
-	# winner -= get_winner(p2, p1)
-
-	if winner < 0:
-		return -1
-	elif winner > 0:
-		return 1
-	return 0
-
 
 cnt = 0
 while True:
-	if(cnt % 100 == 0):
-		print('Generation ',cnt)
-	if(cnt % 1000 == 0):
-		show_game(agnts[0], agnts[1])
+	results = []
+	avgResult = 0
+
+	for i in range(len(agnts)):
+		result = fitness(agnts[i])
+		result += fitness(agnts[i])
+		result += fitness(agnts[i])
+		avgResult += result
+		results+=[result]
+
+	avgResult += 0.01
+	avgResult /= len(agnts)
+
+	maxFitness = max(results)
+
+	if(cnt % 10 == 0):
+		print('Generation: ',cnt)
+		print('AvgFitness: ',avgResult)
+		print('Max fitness: ', maxFitness)
+
+	if(cnt % 50 == 0):
+		max_agent_ind = results.index(max(results))
+		show_game(agnts[max_agent_ind])
+	
+
+	while len(agnts) > GENERATION_SIZE/2:
+		i = 0
+		while i < len(agnts)-1:
+			if results[i] < avgResult:
+				agnts.pop(i)
+				results.pop(i)
+				i -= 1
+			i += 1
+		avgResult += 1
 
 
+	ind = 0
+	while len(agnts) < GENERATION_SIZE:
+		agnts += [agent.Agent(agnts[ind])]
+		ind += 1
 
-	for i in range(0, len(agnts)-2, 2):
-		result = compete(agnts[i], agnts[i+1])
-		if result < 0:
-			agnts[i+1] = agent.Agent(agnts[i])
-		else:
-			agnts[i] = agent.Agent(agnts[i+1])
 
-	# random.shuffle(agnts)
-
-	for i in range(20):
-		agnts[i] = agent.Agent(False)
-
+	random.shuffle(agnts)
 
 	# result = compete(agnts[0], agnts[1])
 

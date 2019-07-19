@@ -5,10 +5,10 @@ import random
 
 class PongGame:
 	def __init__(self):
-		# self.ball_x = random.random()*100+100
-		# self.ball_y = random.random()*100+100
-		self.ball_x = 100+100
-		self.ball_y = 100+100
+		self.ball_x = random.random()*100+100
+		self.ball_y = random.random()*100+100
+		# self.ball_x = 100+100
+		# self.ball_y = 100+100
 		self.ball_vx = 15
 		self.ball_vy = 10
 		self.ball_maxv = 25
@@ -27,9 +27,10 @@ class PongGame:
 
 	def getState(self, player): # -1 = left, 1 = right player
 		if player == -1: # left player's perspective
-			return np.array([self.playerLeft, self.ball_x, self.ball_y, self.ball_vx, self.ball_vy, self.playerRight])
-		elif player == 1:
-			return np.array([self.playerRight, self.ball_x*-1, self.ball_y, self.ball_vx*-1, self.ball_vy, self.playerLeft])
+			return np.array([self.playerLeft, self.ball_x, self.ball_y, self.ball_vx, self.ball_vy, 1])
+		# elif player == 1:
+			# return np.array([self.playerRight, self.ball_x*-1, self.ball_y, self.ball_vx*-1, self.ball_vy, self.playerLeft])
+		return False
 
 	def transition(self, moveLeft): # return 0 for alive; -1 left won, 1 for right won
 		# moves: 1 = up, 0 = still, -1 = down
@@ -61,6 +62,27 @@ class PongGame:
 				# DONE: Implement weird bouncing
 			else:
 				return 1
+
+		if self.ball_x > self.width-self.padding-self.playerSize[0]-self.ball_size:
+			self.ball_x = self.width-self.ball_size-self.padding-self.playerSize[0]
+			self.ball_vx *= -1
+			xNeg = (self.ball_vx < 0)
+			yNeg = (self.ball_vy < 0)
+
+			self.ball_vx = abs(self.ball_vx)
+			self.ball_vy = abs(self.ball_vy)
+
+			ratio = random.random()/3
+
+			self.ball_vy = ratio*self.ball_maxv*1.5
+			self.ball_vx = math.sqrt(abs(self.ball_maxv*self.ball_maxv - self.ball_vy*self.ball_vy))
+
+			if xNeg:
+				self.ball_vx *= -1
+			if yNeg:
+				self.ball_vy *= -1
+			# DONE: Implement weird 
+			
 
 		self.ball_x += self.ball_vx
 		self.ball_y += self.ball_vy
